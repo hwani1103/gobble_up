@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../controllers/game_controller.dart';
 import '../models/board.dart';
+import '../models/game_state.dart';
 import 'cell_widget.dart';
 
 class BoardWidget extends StatelessWidget {
@@ -53,12 +54,17 @@ class BoardWidget extends StatelessWidget {
               canPlaceHere: canPlaceHere,
               isSelected: isSelectedPosition,
               onTap: () {
-                // Allow clicking anywhere - validation is done in selectDestination
-                controller.selectDestination(position);
+                // If already selecting a pawn, this is destination
+                if (controller.phase == GamePhase.selectingDestination) {
+                  controller.selectDestination(position);
+                }
+                // If no pawn selected and cell has pawn, select it
+                else if (cell.topPawn != null) {
+                  controller.selectPawnFromBoard(position);
+                }
               },
               onPawnTap: () {
-                // Select pawn from board
-                controller.selectPawnFromBoard(position);
+                // Not used anymore - handled in onTap
               },
             );
           },

@@ -42,12 +42,9 @@ class CellWidget extends StatelessWidget {
           alignment: Alignment.center,
           children: [
             if (cell.topPawn != null)
-              GestureDetector(
-                onTap: onPawnTap,
-                child: PawnWidget(
-                  pawn: cell.topPawn!,
-                  isSelected: isSelected,
-                ),
+              PawnWidget(
+                pawn: cell.topPawn!,
+                isSelected: isSelected,
               ),
           ],
         ),
