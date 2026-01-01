@@ -31,20 +31,14 @@ class CellWidget extends StatelessWidget {
               ? Colors.green.withOpacity(0.3)
               : Colors.grey[200],
           border: Border.all(
-            color: canPlaceHere ? Colors.green : Colors.grey[400]!,
-            width: canPlaceHere ? 3 : 1,
+            color: Colors.grey[400]!,
+            width: 1,
           ),
           borderRadius: BorderRadius.circular(8),
         ),
         child: Stack(
           alignment: Alignment.center,
           children: [
-            if (canPlaceHere)
-              Icon(
-                Icons.add_circle_outline,
-                color: Colors.green.withOpacity(0.5),
-                size: 40,
-              ),
             if (cell.topPawn != null)
               GestureDetector(
                 onTap: onPawnTap,

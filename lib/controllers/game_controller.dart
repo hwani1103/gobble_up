@@ -124,6 +124,23 @@ class GameController extends ChangeNotifier {
 
   bool canPlacePawn(Position position) {
     if (_state.selectedPawn == null) return false;
-    return board.canPlacePawn(position, _state.selectedPawn!);
+
+    final pawn = _state.selectedPawn!;
+    final selectedPos = _state.selectedPosition;
+
+    // Cannot move to the same position
+    if (selectedPos != null && selectedPos == position) {
+      return false;
+    }
+
+    // If pawn is from board, check with the pawn temporarily removed
+    if (selectedPos != null) {
+      final tempBoard = board.copy();
+      tempBoard.removePawn(selectedPos);
+      return tempBoard.canPlacePawn(position, pawn);
+    }
+
+    // If pawn is from waiting area, check as is
+    return board.canPlacePawn(position, pawn);
   }
 }
