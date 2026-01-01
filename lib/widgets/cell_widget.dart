@@ -8,6 +8,7 @@ class CellWidget extends StatelessWidget {
   final Position position;
   final bool isWinningCell;
   final bool canPlaceHere;
+  final bool isSelected;
   final VoidCallback? onTap;
   final VoidCallback? onPawnTap;
 
@@ -17,6 +18,7 @@ class CellWidget extends StatelessWidget {
     required this.position,
     this.isWinningCell = false,
     this.canPlaceHere = false,
+    this.isSelected = false,
     this.onTap,
     this.onPawnTap,
   });
@@ -44,6 +46,7 @@ class CellWidget extends StatelessWidget {
                 onTap: onPawnTap,
                 child: PawnWidget(
                   pawn: cell.topPawn!,
+                  isSelected: isSelected,
                 ),
               ),
           ],

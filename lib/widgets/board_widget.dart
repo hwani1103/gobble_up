@@ -42,17 +42,22 @@ class BoardWidget extends StatelessWidget {
             final canPlaceHere = controller.selectedPawn != null &&
                 controller.canPlacePawn(position);
 
+            // Check if this cell contains the selected pawn
+            final isSelectedPosition = controller.selectedPosition != null &&
+                controller.selectedPosition == position;
+
             return CellWidget(
               cell: cell,
               position: position,
               isWinningCell: isWinningCell,
               canPlaceHere: canPlaceHere,
+              isSelected: isSelectedPosition,
               onTap: () {
-                if (canPlaceHere) {
-                  controller.selectDestination(position);
-                }
+                // Allow clicking anywhere - validation is done in selectDestination
+                controller.selectDestination(position);
               },
               onPawnTap: () {
+                // Select pawn from board
                 controller.selectPawnFromBoard(position);
               },
             );

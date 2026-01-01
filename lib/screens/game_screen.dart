@@ -44,15 +44,18 @@ class _GameScreenContent extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Player 2's waiting area (top - always Player 2)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: WaitingAreaWidget(
-                player: Player.player2,
-                pawns: controller.state.waitingArea[Player.player2] ?? [],
-                isCurrentPlayer: currentPlayer == Player.player2,
-                selectedPawn: controller.selectedPawn,
-                onPawnTap: controller.selectPawnFromWaiting,
+            // Player 2's waiting area (top - always Player 2) - Fixed height
+            SizedBox(
+              height: 130,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: WaitingAreaWidget(
+                  player: Player.player2,
+                  pawns: controller.state.waitingArea[Player.player2] ?? [],
+                  isCurrentPlayer: currentPlayer == Player.player2,
+                  selectedPawn: controller.selectedPawn,
+                  onPawnTap: controller.selectPawnFromWaiting,
+                ),
               ),
             ),
 
@@ -109,15 +112,18 @@ class _GameScreenContent extends StatelessWidget {
               ),
             ),
 
-            // Player 1's waiting area (bottom - always Player 1)
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: WaitingAreaWidget(
-                player: Player.player1,
-                pawns: controller.state.waitingArea[Player.player1] ?? [],
-                isCurrentPlayer: currentPlayer == Player.player1,
-                selectedPawn: controller.selectedPawn,
-                onPawnTap: controller.selectPawnFromWaiting,
+            // Player 1's waiting area (bottom - always Player 1) - Fixed height
+            SizedBox(
+              height: 130,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: WaitingAreaWidget(
+                  player: Player.player1,
+                  pawns: controller.state.waitingArea[Player.player1] ?? [],
+                  isCurrentPlayer: currentPlayer == Player.player1,
+                  selectedPawn: controller.selectedPawn,
+                  onPawnTap: controller.selectPawnFromWaiting,
+                ),
               ),
             ),
 
