@@ -87,10 +87,6 @@ class WaitingAreaWidget extends StatelessWidget {
               }).toList(),
             ),
           ),
-
-          // Turn indicator
-          if (isCurrentPlayer)
-            const Icon(Icons.arrow_forward, color: Colors.green, size: 20),
         ],
       ),
     );
