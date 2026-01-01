@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/game_controller.dart';
+import '../models/player.dart';
 import '../widgets/board_widget.dart';
 import '../widgets/waiting_area_widget.dart';
 
@@ -43,13 +44,13 @@ class _GameScreenContent extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            // Opponent's waiting area (top)
+            // Player 2's waiting area (top - always Player 2)
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: WaitingAreaWidget(
-                player: controller.currentPlayer.opponent,
-                pawns: controller.state.waitingArea[controller.currentPlayer.opponent] ?? [],
-                isCurrentPlayer: false,
+                player: Player.player2,
+                pawns: controller.state.waitingArea[Player.player2] ?? [],
+                isCurrentPlayer: currentPlayer == Player.player2,
                 selectedPawn: controller.selectedPawn,
                 onPawnTap: controller.selectPawnFromWaiting,
               ),
@@ -98,7 +99,7 @@ class _GameScreenContent extends StatelessWidget {
                     ),
             ),
 
-            // Game board
+            // Game board - fixed size
             Expanded(
               child: Center(
                 child: ConstrainedBox(
@@ -108,30 +109,34 @@ class _GameScreenContent extends StatelessWidget {
               ),
             ),
 
-            // Current player's waiting area (bottom)
+            // Player 1's waiting area (bottom - always Player 1)
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: WaitingAreaWidget(
-                player: controller.currentPlayer,
-                pawns: controller.state.waitingArea[controller.currentPlayer] ?? [],
-                isCurrentPlayer: true,
+                player: Player.player1,
+                pawns: controller.state.waitingArea[Player.player1] ?? [],
+                isCurrentPlayer: currentPlayer == Player.player1,
                 selectedPawn: controller.selectedPawn,
                 onPawnTap: controller.selectPawnFromWaiting,
               ),
             ),
 
-            // Action buttons
-            if (controller.selectedPawn != null)
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: controller.cancelSelection,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.orange,
-                  ),
-                  child: const Text('Cancel Selection'),
-                ),
-              ),
+            // Action buttons - fixed height to prevent grid resize
+            SizedBox(
+              height: 56,
+              child: controller.selectedPawn != null
+                  ? Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: controller.cancelSelection,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.orange,
+                        ),
+                        child: const Text('Cancel Selection'),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+            ),
           ],
         ),
       ),

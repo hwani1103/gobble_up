@@ -52,26 +52,6 @@ class CellWidget extends StatelessWidget {
                   pawn: cell.topPawn!,
                 ),
               ),
-            if (cell.stack.length > 1)
-              Positioned(
-                top: 4,
-                right: 4,
-                child: Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.6),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Text(
-                    '${cell.stack.length}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
           ],
         ),
       ),
