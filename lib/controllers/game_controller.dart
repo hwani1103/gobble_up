@@ -59,8 +59,8 @@ class GameController extends ChangeNotifier {
 
     final pawn = _state.selectedPawn!;
 
-    // Check if the move is valid
-    if (!board.canPlacePawn(destination, pawn)) {
+    // Check if the move is valid (uses the corrected canPlacePawn logic)
+    if (!canPlacePawn(destination)) {
       // Invalid move, deselect
       cancelSelection();
       return;
