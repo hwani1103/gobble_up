@@ -34,16 +34,6 @@ class PawnWidget extends StatelessWidget {
             ),
           ],
         ),
-        child: Center(
-          child: Text(
-            pawn.size.displayName[0],
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-              fontSize: pawn.size.displaySize * 0.5,
-            ),
-          ),
-        ),
       ),
     );
   }

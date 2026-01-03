@@ -21,8 +21,6 @@ class WaitingAreaWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const pawnSize = 40.0; // Uniform size for all pawns in waiting area
-
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
       decoration: BoxDecoration(
@@ -56,8 +54,8 @@ class WaitingAreaWidget extends StatelessWidget {
                 return GestureDetector(
                   onTap: isCurrentPlayer ? () => onPawnTap(pawn) : null,
                   child: Container(
-                    width: pawnSize,
-                    height: pawnSize,
+                    width: pawn.size.displaySize,
+                    height: pawn.size.displaySize,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: player.color,
@@ -72,16 +70,6 @@ class WaitingAreaWidget extends StatelessWidget {
                           offset: const Offset(1, 1),
                         ),
                       ],
-                    ),
-                    child: Center(
-                      child: Text(
-                        pawn.size.displayName[0],
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
                     ),
                   ),
                 );
