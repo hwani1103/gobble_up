@@ -22,7 +22,7 @@ class WaitingAreaWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
       decoration: BoxDecoration(
         color: player.color.withOpacity(0.1),
         border: Border.all(
@@ -32,6 +32,7 @@ class WaitingAreaWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Player name
           Text(
@@ -47,15 +48,16 @@ class WaitingAreaWidget extends StatelessWidget {
           // Pawns in a single row
           Expanded(
             child: Wrap(
-              spacing: 4,
-              runSpacing: 4,
+              spacing: 10,
+              runSpacing: 10,
+              alignment: WrapAlignment.spaceEvenly,
               children: pawns.map((pawn) {
                 final isSelected = selectedPawn == pawn;
                 return GestureDetector(
                   onTap: isCurrentPlayer ? () => onPawnTap(pawn) : null,
                   child: Container(
-                    width: pawn.size.displaySize,
-                    height: pawn.size.displaySize,
+                    width: pawn.size.waitingAreaSize,
+                    height: pawn.size.waitingAreaSize,
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: player.color,

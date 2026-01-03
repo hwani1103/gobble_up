@@ -10,14 +10,27 @@ enum PawnSize {
     return index > other.index;
   }
 
+  // Size for board display (70% of grid cell for large)
   double get displaySize {
     switch (this) {
       case PawnSize.small:
-        return 22.0;
+        return 35.0;
       case PawnSize.medium:
-        return 30.0;
+        return 55.0;
       case PawnSize.large:
-        return 40.0;
+        return 80.0;
+    }
+  }
+
+  // Size for waiting area display (larger for better visibility)
+  double get waitingAreaSize {
+    switch (this) {
+      case PawnSize.small:
+        return 28.0;
+      case PawnSize.medium:
+        return 38.0;
+      case PawnSize.large:
+        return 50.0;
     }
   }
 

@@ -46,7 +46,7 @@ class _GameScreenContent extends StatelessWidget {
           children: [
             // Player 2's waiting area (top - always Player 2) - Fixed height
             SizedBox(
-              height: 80,
+              height: 110,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: WaitingAreaWidget(
@@ -114,7 +114,7 @@ class _GameScreenContent extends StatelessWidget {
 
             // Player 1's waiting area (bottom - always Player 1) - Fixed height
             SizedBox(
-              height: 80,
+              height: 110,
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: WaitingAreaWidget(
