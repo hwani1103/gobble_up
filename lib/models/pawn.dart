@@ -13,11 +13,11 @@ enum PawnSize {
   double get displaySize {
     switch (this) {
       case PawnSize.small:
-        return 35.0;
+        return 22.0;
       case PawnSize.medium:
-        return 50.0;
+        return 30.0;
       case PawnSize.large:
-        return 65.0;
+        return 40.0;
     }
   }
 
