@@ -51,6 +51,7 @@ class WaitingAreaWidget extends StatelessWidget {
               spacing: 10,
               runSpacing: 10,
               alignment: WrapAlignment.spaceEvenly,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: pawns.map((pawn) {
                 final isSelected = selectedPawn == pawn;
                 return GestureDetector(
