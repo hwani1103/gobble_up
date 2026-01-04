@@ -212,8 +212,7 @@ class AIController {
       }
     }
 
-    AIMove? bestMove;
-    int bestScore = -10000;
+    final moveScores = <AIMove, int>{};
 
     for (final move in allMoves) {
       final score = _minimax(
@@ -226,14 +225,21 @@ class AIController {
         alpha: -10000,
         beta: 10000,
       );
-
-      if (score > bestScore) {
-        bestScore = score;
-        bestMove = move;
-      }
+      moveScores[move] = score;
     }
 
-    return bestMove;
+    // Find the best score
+    final bestScore = moveScores.values.reduce((a, b) => a > b ? a : b);
+
+    // Collect all moves with the best score (or within small margin for variety)
+    final threshold = 10; // Allow moves within 10 points of best
+    final goodMoves = moveScores.entries
+        .where((entry) => entry.value >= bestScore - threshold)
+        .map((entry) => entry.key)
+        .toList();
+
+    // Randomly pick from good moves for variety in AI vs AI
+    return goodMoves[_random.nextInt(goodMoves.length)];
   }
 
   bool _wouldWin(Board board, AIMove move, Player player) {
