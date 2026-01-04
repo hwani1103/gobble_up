@@ -219,6 +219,7 @@ class GameController extends ChangeNotifier {
       waitingArea: _state.waitingArea,
       aiPlayer: aiPlayer,
       difficulty: aiDifficulty!,
+      isAIvsAI: gameMode == GameMode.aiVsAI,
     );
 
     if (aiMove == null) return;

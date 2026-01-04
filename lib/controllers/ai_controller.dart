@@ -24,6 +24,7 @@ class AIController {
     required Map<Player, List<Pawn>> waitingArea,
     required Player aiPlayer,
     required AIDifficulty difficulty,
+    bool isAIvsAI = false,
   }) {
     switch (difficulty) {
       case AIDifficulty.easy:
@@ -31,7 +32,7 @@ class AIController {
       case AIDifficulty.medium:
         return _calculateMediumMove(board, waitingArea, aiPlayer);
       case AIDifficulty.hard:
-        return _calculateHardMove(board, waitingArea, aiPlayer);
+        return _calculateHardMove(board, waitingArea, aiPlayer, isAIvsAI);
     }
   }
 
@@ -196,6 +197,7 @@ class AIController {
     Board board,
     Map<Player, List<Pawn>> waitingArea,
     Player aiPlayer,
+    bool isAIvsAI,
   ) {
     final allMoves = _getAllPossibleMoves(board, waitingArea, aiPlayer);
     if (allMoves.isEmpty) return null;
@@ -231,15 +233,20 @@ class AIController {
     // Find the best score
     final bestScore = moveScores.values.reduce((a, b) => a > b ? a : b);
 
-    // Collect all moves with the best score (or within small margin for variety)
-    final threshold = 10; // Allow moves within 10 points of best
-    final goodMoves = moveScores.entries
-        .where((entry) => entry.value >= bestScore - threshold)
-        .map((entry) => entry.key)
-        .toList();
+    // In AI vs AI mode, add randomization for variety
+    if (isAIvsAI) {
+      final threshold = 10; // Allow moves within 10 points of best
+      final goodMoves = moveScores.entries
+          .where((entry) => entry.value >= bestScore - threshold)
+          .map((entry) => entry.key)
+          .toList();
+      return goodMoves[_random.nextInt(goodMoves.length)];
+    }
 
-    // Randomly pick from good moves for variety in AI vs AI
-    return goodMoves[_random.nextInt(goodMoves.length)];
+    // For human vs AI, always pick the absolute best move
+    return moveScores.entries
+        .firstWhere((entry) => entry.value == bestScore)
+        .key;
   }
 
   bool _wouldWin(Board board, AIMove move, Player player) {
