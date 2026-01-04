@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import '../models/board.dart';
 import '../models/game_mode.dart';
 import '../models/game_state.dart';
@@ -19,7 +20,19 @@ class GameController extends ChangeNotifier {
   GameController({
     this.gameMode = GameMode.humanVsHuman,
     this.aiDifficulty,
-  }) : _state = GameState.initial();
+  }) : _state = GameState.initial(
+          initialPlayer: (gameMode == GameMode.humanVsAI &&
+                  aiDifficulty == AIDifficulty.hell)
+              ? Player.player2
+              : Player.player1,
+        ) {
+    // Trigger AI move if AI starts first
+    if (isAITurn) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _checkAndTriggerAIMove();
+      });
+    }
+  }
 
   GameState get state => _state;
 
@@ -106,6 +119,9 @@ class GameController extends ChangeNotifier {
     // Place the pawn at destination
     newBoard.placePawn(destination, pawn);
 
+    // Play haptic feedback (light impact)
+    HapticFeedback.lightImpact();
+
     // Check for winner
     final winner = newBoard.checkWinner();
 
@@ -147,8 +163,20 @@ class GameController extends ChangeNotifier {
 
   void resetGame() {
     _aiMoveTimer?.cancel();
-    _state = GameState.initial();
+    _state = GameState.initial(
+      initialPlayer: (gameMode == GameMode.humanVsAI &&
+              aiDifficulty == AIDifficulty.hell)
+          ? Player.player2
+          : Player.player1,
+    );
     notifyListeners();
+
+    // Trigger AI move if AI starts first
+    if (isAITurn) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _checkAndTriggerAIMove();
+      });
+    }
   }
 
   @override

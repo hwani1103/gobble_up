@@ -50,7 +50,6 @@ class MainMenuScreen extends StatelessWidget {
                 '중급',
                 AIDifficulty.medium,
                 Colors.orange,
-                enabled: false,
               ),
               const SizedBox(height: 16),
               _buildDifficultyButton(
@@ -58,7 +57,6 @@ class MainMenuScreen extends StatelessWidget {
                 '상급',
                 AIDifficulty.hard,
                 Colors.red,
-                enabled: false,
               ),
               const SizedBox(height: 16),
               _buildDifficultyButton(
@@ -66,7 +64,6 @@ class MainMenuScreen extends StatelessWidget {
                 '지옥',
                 AIDifficulty.hell,
                 Colors.purple[900]!,
-                enabled: false,
               ),
             ],
           ),

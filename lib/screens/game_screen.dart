@@ -103,7 +103,9 @@ class _GameScreenContent extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    '${winner.name} Wins! 🎉',
+                    winner == Player.player1
+                        ? 'Player Wins! 🎉'
+                        : '${_getPlayerName(Player.player2)} Wins! 🎉',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,

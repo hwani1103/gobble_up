@@ -27,7 +27,7 @@ class GameState {
     this.winner,
   });
 
-  factory GameState.initial() {
+  factory GameState.initial({Player initialPlayer = Player.player1}) {
     final waitingArea = <Player, List<Pawn>>{};
 
     // Initialize pawns for each player
@@ -47,7 +47,7 @@ class GameState {
 
     return GameState(
       board: Board(),
-      currentPlayer: Player.player1,
+      currentPlayer: initialPlayer,
       waitingArea: waitingArea,
     );
   }
