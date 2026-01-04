@@ -214,6 +214,21 @@ class AIController {
       }
     }
 
+    // ALWAYS block opponent's winning move
+    final opponent = aiPlayer.opponent;
+    final opponentMoves = _getAllPossibleMoves(board, waitingArea, opponent);
+    for (final opponentMove in opponentMoves) {
+      if (_wouldWin(board, opponentMove, opponent)) {
+        // Try to block by placing at the same position
+        final blockingMoves = allMoves.where(
+          (move) => move.toPosition == opponentMove.toPosition,
+        );
+        if (blockingMoves.isNotEmpty) {
+          return blockingMoves.first;
+        }
+      }
+    }
+
     final moveScores = <AIMove, int>{};
 
     for (final move in allMoves) {
