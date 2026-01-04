@@ -227,6 +227,11 @@ class AIController {
     final allMoves = _getAllPossibleMoves(board, waitingArea, aiPlayer);
     if (allMoves.isEmpty) return null;
 
+    // Opening move: Just play center or corner quickly (no need for deep thinking)
+    if (_isOpeningMove(board)) {
+      return _getSimpleOpeningMove(waitingArea, aiPlayer);
+    }
+
     AIMove? bestMove;
     int bestScore = -10000;
 
@@ -440,5 +445,51 @@ class AIController {
     }
 
     return score;
+  }
+
+  // Check if this is the opening move (board is empty or has only 1 piece)
+  bool _isOpeningMove(Board board) {
+    int pieceCount = 0;
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        if (!board.getCell(Position(row, col)).isEmpty) {
+          pieceCount++;
+        }
+      }
+    }
+    return pieceCount == 0;
+  }
+
+  // Simple opening move: play center or a random corner
+  AIMove? _getSimpleOpeningMove(
+    Map<Player, List<Pawn>> waitingArea,
+    Player aiPlayer,
+  ) {
+    final waitingPawns = waitingArea[aiPlayer] ?? [];
+    if (waitingPawns.isEmpty) return null;
+
+    // Prefer center, otherwise pick a random corner
+    final positions = [
+      Position(1, 1), // Center
+      Position(0, 0), // Top-left
+      Position(0, 2), // Top-right
+      Position(2, 0), // Bottom-left
+      Position(2, 2), // Bottom-right
+    ];
+
+    // Pick any pawn (prefer medium or large if available)
+    Pawn selectedPawn = waitingPawns.first;
+    for (final pawn in waitingPawns) {
+      if (pawn.size == PawnSize.medium || pawn.size == PawnSize.large) {
+        selectedPawn = pawn;
+        break;
+      }
+    }
+
+    return AIMove(
+      pawn: selectedPawn,
+      fromPosition: null,
+      toPosition: positions[0], // Always play center on opening
+    );
   }
 }
