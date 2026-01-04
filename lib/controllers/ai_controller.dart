@@ -354,7 +354,7 @@ class AIController {
     int score = 0;
     final opponent = aiPlayer.opponent;
 
-    // Evaluate lines (rows, columns, diagonals)
+    // 1. Evaluate lines (rows, columns, diagonals) with piece size consideration
     final lines = [
       // Rows
       [Position(0, 0), Position(0, 1), Position(0, 2)],
@@ -372,6 +372,8 @@ class AIController {
     for (final line in lines) {
       int aiCount = 0;
       int opponentCount = 0;
+      int aiLargeCount = 0; // Large pieces can't be covered
+      int opponentLargeCount = 0;
 
       for (final pos in line) {
         final cell = board.getCell(pos);
@@ -379,26 +381,62 @@ class AIController {
         if (pawn != null) {
           if (pawn.owner == aiPlayer) {
             aiCount++;
+            if (pawn.size == PawnSize.large) aiLargeCount++;
           } else {
             opponentCount++;
+            if (pawn.size == PawnSize.large) opponentLargeCount++;
           }
         }
       }
 
-      // Score based on potential lines
+      // Score based on potential lines with size bonus
       if (aiCount > 0 && opponentCount == 0) {
-        score += aiCount * aiCount * 10;
+        score += aiCount * aiCount * 15 + aiLargeCount * 20;
       } else if (opponentCount > 0 && aiCount == 0) {
-        score -= opponentCount * opponentCount * 10;
+        score -= opponentCount * opponentCount * 15 + opponentLargeCount * 20;
       }
     }
 
-    // Bonus for center control
+    // 2. Bonus for center control with size consideration
     final center = board.getCell(Position(1, 1)).topPawn;
     if (center?.owner == aiPlayer) {
-      score += 30;
+      score += 40 + (center!.size == PawnSize.large ? 30 :
+                     center.size == PawnSize.medium ? 15 : 0);
     } else if (center?.owner == opponent) {
-      score -= 30;
+      score -= 40 + (center!.size == PawnSize.large ? 30 :
+                     center.size == PawnSize.medium ? 15 : 0);
+    }
+
+    // 3. Corner control bonus
+    final corners = [Position(0, 0), Position(0, 2), Position(2, 0), Position(2, 2)];
+    for (final pos in corners) {
+      final pawn = board.getCell(pos).topPawn;
+      if (pawn?.owner == aiPlayer) {
+        score += 15 + (pawn!.size == PawnSize.large ? 15 : 0);
+      } else if (pawn?.owner == opponent) {
+        score -= 15 + (pawn!.size == PawnSize.large ? 15 : 0);
+      }
+    }
+
+    // 4. Piece vulnerability (small pieces are vulnerable)
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        final cell = board.getCell(Position(row, col));
+        final pawn = cell.topPawn;
+        if (pawn != null) {
+          if (pawn.owner == aiPlayer) {
+            // Penalize vulnerable pieces
+            if (pawn.size == PawnSize.small) score -= 5;
+            // Reward protected Large pieces
+            if (pawn.size == PawnSize.large) score += 25;
+          } else {
+            // Opponent's vulnerable pieces are good for us
+            if (pawn.size == PawnSize.small) score += 5;
+            // Opponent's Large pieces are bad for us
+            if (pawn.size == PawnSize.large) score -= 25;
+          }
+        }
+      }
     }
 
     return score;
