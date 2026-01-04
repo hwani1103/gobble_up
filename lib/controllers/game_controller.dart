@@ -28,8 +28,10 @@ class GameController extends ChangeNotifier {
         ) {
     // Trigger AI move if AI starts first
     if (isAITurn) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _checkAndTriggerAIMove();
+      // Random delay between 2-3 seconds for initial move
+      final delaySeconds = 2 + _random.nextInt(2);
+      Future.delayed(Duration(seconds: delaySeconds), () {
+        _makeAIMove();
       });
     }
   }
