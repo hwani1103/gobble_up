@@ -277,7 +277,10 @@ class AIController {
   }) {
     // Apply move
     final newBoard = board.copy();
-    final newWaitingArea = Map<Player, List<Pawn>>.from(waitingArea);
+    // Deep copy the waiting area to avoid modifying the original
+    final newWaitingArea = waitingArea.map(
+      (key, value) => MapEntry(key, List<Pawn>.from(value)),
+    );
 
     if (move.fromPosition != null) {
       newBoard.removePawn(move.fromPosition!);
