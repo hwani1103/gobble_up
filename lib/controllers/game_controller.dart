@@ -44,12 +44,19 @@ class GameController extends ChangeNotifier {
 
   void selectPawnFromBoard(Position position) {
     if (_state.isGameOver) return;
-    if (_state.phase != GamePhase.selectingPawn) return;
 
     final cell = board.getCell(position);
     final pawn = cell.topPawn;
 
     if (pawn == null || pawn.owner != currentPlayer) return;
+
+    // Toggle: if already selected at this position, deselect it
+    if (_state.selectedPawn == pawn && _state.selectedPosition == position) {
+      cancelSelection();
+      return;
+    }
+
+    if (_state.phase != GamePhase.selectingPawn) return;
 
     _state = _state.copyWith(
       selectedPawn: pawn,
