@@ -194,6 +194,13 @@ class AIController {
     final allMoves = _getAllPossibleMoves(board, waitingArea, aiPlayer);
     if (allMoves.isEmpty) return null;
 
+    // ALWAYS take immediate winning move if available
+    for (final move in allMoves) {
+      if (_wouldWin(board, move, aiPlayer)) {
+        return move;
+      }
+    }
+
     AIMove? bestMove;
     int bestScore = -10000;
 
@@ -230,6 +237,13 @@ class AIController {
     // Opening move: Just play center or corner quickly (no need for deep thinking)
     if (_isOpeningMove(board)) {
       return _getSimpleOpeningMove(waitingArea, aiPlayer);
+    }
+
+    // ALWAYS take immediate winning move if available
+    for (final move in allMoves) {
+      if (_wouldWin(board, move, aiPlayer)) {
+        return move;
+      }
     }
 
     AIMove? bestMove;
