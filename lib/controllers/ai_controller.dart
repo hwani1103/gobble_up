@@ -191,7 +191,7 @@ class AIController {
     return bestMove;
   }
 
-  // HARD AI: Deep Minimax with depth 5
+  // HARD AI: Deep Minimax with depth 4
   AIMove? _calculateHardMove(
     Board board,
     Map<Player, List<Pawn>> waitingArea,
@@ -220,7 +220,7 @@ class AIController {
         board,
         waitingArea,
         move,
-        depth: 5,
+        depth: 4,
         isMaximizing: false,
         aiPlayer: aiPlayer,
         alpha: -10000,
