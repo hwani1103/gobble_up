@@ -213,37 +213,40 @@ class GameController extends ChangeNotifier {
     _isAIThinking = true;
     notifyListeners();
 
-    final aiMove = _aiController.calculateMove(
-      board: board,
-      waitingArea: _state.waitingArea,
-      aiPlayer: Player.player2,
-      difficulty: aiDifficulty!,
-    );
+    // Give UI a chance to update before starting heavy calculation
+    Future.delayed(const Duration(milliseconds: 100), () {
+      final aiMove = _aiController.calculateMove(
+        board: board,
+        waitingArea: _state.waitingArea,
+        aiPlayer: Player.player2,
+        difficulty: aiDifficulty!,
+      );
 
-    if (aiMove == null) {
+      if (aiMove == null) {
+        _isAIThinking = false;
+        notifyListeners();
+        return;
+      }
+
+      // Clear AI thinking state and select the pawn
       _isAIThinking = false;
+      _state = _state.copyWith(
+        board: _state.board,  // Explicitly pass current board to avoid copy issues
+        waitingArea: _state.waitingArea,  // Explicitly pass current waiting area
+        selectedPawn: aiMove.pawn,
+        selectedPosition: aiMove.fromPosition,
+        phase: GamePhase.selectingDestination,
+      );
       notifyListeners();
-      return;
-    }
 
-    // Clear AI thinking state and select the pawn
-    _isAIThinking = false;
-    _state = _state.copyWith(
-      board: _state.board,  // Explicitly pass current board to avoid copy issues
-      waitingArea: _state.waitingArea,  // Explicitly pass current waiting area
-      selectedPawn: aiMove.pawn,
-      selectedPosition: aiMove.fromPosition,
-      phase: GamePhase.selectingDestination,
-    );
-    notifyListeners();
+      // Random delay between 0.5-1 seconds before placing
+      final placeDelayMs = 500 + _random.nextInt(501);
+      Future.delayed(Duration(milliseconds: placeDelayMs), () {
+        if (_state.isGameOver) return;
 
-    // Random delay between 0.5-1 seconds before placing
-    final placeDelayMs = 500 + _random.nextInt(501);
-    Future.delayed(Duration(milliseconds: placeDelayMs), () {
-      if (_state.isGameOver) return;
-
-      // Place the pawn
-      selectDestination(aiMove.toPosition);
+        // Place the pawn
+        selectDestination(aiMove.toPosition);
+      });
     });
   }
 
