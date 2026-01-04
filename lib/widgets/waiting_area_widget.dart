@@ -10,7 +10,6 @@ class WaitingAreaWidget extends StatelessWidget {
   final Pawn? selectedPawn;
   final Function(Pawn) onPawnTap;
   final String? displayName;
-  final bool isThinking;
 
   const WaitingAreaWidget({
     super.key,
@@ -20,7 +19,6 @@ class WaitingAreaWidget extends StatelessWidget {
     this.selectedPawn,
     required this.onPawnTap,
     this.displayName,
-    this.isThinking = false,
   });
 
   @override
@@ -38,30 +36,14 @@ class WaitingAreaWidget extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Player name with loading indicator
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (isThinking) ...[
-                SizedBox(
-                  width: 12,
-                  height: 12,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    valueColor: AlwaysStoppedAnimation<Color>(player.color),
-                  ),
-                ),
-                const SizedBox(width: 4),
-              ],
-              Text(
-                '${displayName ?? player.name}:',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 13,
-                  color: isCurrentPlayer ? player.color : Colors.grey[600],
-                ),
-              ),
-            ],
+          // Player name
+          Text(
+            '${displayName ?? player.name}:',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 13,
+              color: isCurrentPlayer ? player.color : Colors.grey[600],
+            ),
           ),
           const SizedBox(width: 6),
 
