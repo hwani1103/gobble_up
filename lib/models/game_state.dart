@@ -63,9 +63,9 @@ class GameState {
     bool clearSelection = false,
   }) {
     return GameState(
-      board: board ?? this.board.copy(),
+      board: board ?? this.board,
       currentPlayer: currentPlayer ?? this.currentPlayer,
-      waitingArea: waitingArea ?? Map.from(this.waitingArea),
+      waitingArea: waitingArea ?? this.waitingArea,
       phase: phase ?? this.phase,
       selectedPawn: clearSelection ? null : (selectedPawn ?? this.selectedPawn),
       selectedPosition: clearSelection ? null : (selectedPosition ?? this.selectedPosition),

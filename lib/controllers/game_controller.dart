@@ -216,6 +216,8 @@ class GameController extends ChangeNotifier {
 
     // Select the pawn
     _state = _state.copyWith(
+      board: _state.board,  // Explicitly pass current board to avoid copy issues
+      waitingArea: _state.waitingArea,  // Explicitly pass current waiting area
       selectedPawn: aiMove.pawn,
       selectedPosition: aiMove.fromPosition,
       phase: GamePhase.selectingDestination,
