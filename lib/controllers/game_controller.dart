@@ -21,11 +21,15 @@ class GameController extends ChangeNotifier {
     this.gameMode = GameMode.humanVsHuman,
     this.aiDifficulty,
   }) : _state = GameState.initial(
-          initialPlayer: Player.player1,
+          initialPlayer: (gameMode == GameMode.humanVsAI &&
+                  aiDifficulty == AIDifficulty.hard)
+              ? Player.player2
+              : Player.player1,
         ) {
-    // Start AI vs AI game automatically
-    if (gameMode == GameMode.aiVsAI) {
-      Future.delayed(const Duration(milliseconds: 500), () {
+    // Start AI move if AI goes first
+    if (gameMode == GameMode.aiVsAI ||
+        (gameMode == GameMode.humanVsAI && aiDifficulty == AIDifficulty.hard)) {
+      Future.delayed(const Duration(milliseconds: 100), () {
         _checkAndTriggerAIMove();
       });
     }
@@ -161,9 +165,20 @@ class GameController extends ChangeNotifier {
   void resetGame() {
     _aiMoveTimer?.cancel();
     _state = GameState.initial(
-      initialPlayer: Player.player1,
+      initialPlayer: (gameMode == GameMode.humanVsAI &&
+              aiDifficulty == AIDifficulty.hard)
+          ? Player.player2
+          : Player.player1,
     );
     notifyListeners();
+
+    // Trigger AI move if AI starts first
+    if (gameMode == GameMode.aiVsAI ||
+        (gameMode == GameMode.humanVsAI && aiDifficulty == AIDifficulty.hard)) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        _checkAndTriggerAIMove();
+      });
+    }
   }
 
   @override
