@@ -193,8 +193,8 @@ class GameController extends ChangeNotifier {
 
   void _checkAndTriggerAIMove() {
     if (isAITurn) {
-      // Random delay between 2-4 seconds
-      final delaySeconds = 2 + _random.nextInt(3);
+      // Random delay between 2-3 seconds
+      final delaySeconds = 2 + _random.nextInt(2);
       _aiMoveTimer?.cancel();
       _aiMoveTimer = Timer(Duration(seconds: delaySeconds), () {
         _makeAIMove();
@@ -222,8 +222,9 @@ class GameController extends ChangeNotifier {
     );
     notifyListeners();
 
-    // Small delay before placing (for visual feedback)
-    Future.delayed(const Duration(milliseconds: 300), () {
+    // Random delay between 0.5-1 seconds before placing
+    final placeDelayMs = 500 + _random.nextInt(501);
+    Future.delayed(Duration(milliseconds: placeDelayMs), () {
       if (_state.isGameOver) return;
 
       // Place the pawn
