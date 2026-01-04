@@ -25,13 +25,14 @@ class GameController extends ChangeNotifier {
   void selectPawnFromWaiting(Pawn pawn) {
     if (_state.isGameOver) return;
     if (pawn.owner != currentPlayer) return;
-    if (_state.phase != GamePhase.selectingPawn) return;
 
     // Toggle: if already selected, deselect it
     if (_state.selectedPawn == pawn) {
       cancelSelection();
       return;
     }
+
+    if (_state.phase != GamePhase.selectingPawn) return;
 
     _state = _state.copyWith(
       selectedPawn: pawn,
