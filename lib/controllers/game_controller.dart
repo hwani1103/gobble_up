@@ -1,13 +1,25 @@
+import 'dart:async';
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import '../models/board.dart';
+import '../models/game_mode.dart';
 import '../models/game_state.dart';
 import '../models/pawn.dart';
 import '../models/player.dart';
+import 'ai_controller.dart';
 
 class GameController extends ChangeNotifier {
   GameState _state;
+  final GameMode gameMode;
+  final AIDifficulty? aiDifficulty;
+  final AIController _aiController = AIController();
+  final Random _random = Random();
+  Timer? _aiMoveTimer;
 
-  GameController() : _state = GameState.initial();
+  GameController({
+    this.gameMode = GameMode.humanVsHuman,
+    this.aiDifficulty,
+  }) : _state = GameState.initial();
 
   GameState get state => _state;
 
@@ -118,6 +130,9 @@ class GameController extends ChangeNotifier {
     }
 
     notifyListeners();
+
+    // Check if it's AI's turn after the move
+    _checkAndTriggerAIMove();
   }
 
   void cancelSelection() {
@@ -131,8 +146,61 @@ class GameController extends ChangeNotifier {
   }
 
   void resetGame() {
+    _aiMoveTimer?.cancel();
     _state = GameState.initial();
     notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _aiMoveTimer?.cancel();
+    super.dispose();
+  }
+
+  bool get isAITurn {
+    return gameMode == GameMode.humanVsAI &&
+        currentPlayer == Player.player2 &&
+        !_state.isGameOver;
+  }
+
+  void _checkAndTriggerAIMove() {
+    if (isAITurn) {
+      // Random delay between 2-4 seconds
+      final delaySeconds = 2 + _random.nextInt(3);
+      _aiMoveTimer?.cancel();
+      _aiMoveTimer = Timer(Duration(seconds: delaySeconds), () {
+        _makeAIMove();
+      });
+    }
+  }
+
+  void _makeAIMove() {
+    if (!isAITurn || aiDifficulty == null) return;
+
+    final aiMove = _aiController.calculateMove(
+      board: board,
+      waitingArea: _state.waitingArea,
+      aiPlayer: Player.player2,
+      difficulty: aiDifficulty!,
+    );
+
+    if (aiMove == null) return;
+
+    // Select the pawn
+    _state = _state.copyWith(
+      selectedPawn: aiMove.pawn,
+      selectedPosition: aiMove.fromPosition,
+      phase: GamePhase.selectingDestination,
+    );
+    notifyListeners();
+
+    // Small delay before placing (for visual feedback)
+    Future.delayed(const Duration(milliseconds: 300), () {
+      if (_state.isGameOver) return;
+
+      // Place the pawn
+      selectDestination(aiMove.toPosition);
+    });
   }
 
   bool canPlacePawn(Position position) {

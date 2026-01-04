@@ -9,6 +9,7 @@ class WaitingAreaWidget extends StatelessWidget {
   final bool isCurrentPlayer;
   final Pawn? selectedPawn;
   final Function(Pawn) onPawnTap;
+  final String? displayName;
 
   const WaitingAreaWidget({
     super.key,
@@ -17,6 +18,7 @@ class WaitingAreaWidget extends StatelessWidget {
     required this.isCurrentPlayer,
     this.selectedPawn,
     required this.onPawnTap,
+    this.displayName,
   });
 
   @override
@@ -36,7 +38,7 @@ class WaitingAreaWidget extends StatelessWidget {
         children: [
           // Player name
           Text(
-            '${player.name}:',
+            '${displayName ?? player.name}:',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 13,

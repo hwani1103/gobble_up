@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'screens/game_screen.dart';
+import 'screens/main_menu_screen.dart';
 
 void main() {
   runApp(const GobbleUpApp());
@@ -16,7 +16,7 @@ class GobbleUpApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const GameScreen(),
+      home: const MainMenuScreen(),
       debugShowCheckedModeBanner: false,
     );
   }

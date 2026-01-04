@@ -1,24 +1,55 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controllers/game_controller.dart';
+import '../models/game_mode.dart';
 import '../models/player.dart';
 import '../widgets/board_widget.dart';
 import '../widgets/waiting_area_widget.dart';
 
 class GameScreen extends StatelessWidget {
-  const GameScreen({super.key});
+  final GameMode gameMode;
+  final AIDifficulty? aiDifficulty;
+
+  const GameScreen({
+    super.key,
+    this.gameMode = GameMode.humanVsHuman,
+    this.aiDifficulty,
+  });
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (_) => GameController(),
-      child: const _GameScreenContent(),
+      create: (_) {
+        final controller = GameController(
+          gameMode: gameMode,
+          aiDifficulty: aiDifficulty,
+        );
+        // Trigger AI move if AI starts first (though in our case, Player 1 always starts)
+        return controller;
+      },
+      child: _GameScreenContent(
+        gameMode: gameMode,
+        aiDifficulty: aiDifficulty,
+      ),
     );
   }
 }
 
 class _GameScreenContent extends StatelessWidget {
-  const _GameScreenContent();
+  final GameMode gameMode;
+  final AIDifficulty? aiDifficulty;
+
+  const _GameScreenContent({
+    this.gameMode = GameMode.humanVsHuman,
+    this.aiDifficulty,
+  });
+
+  String _getPlayerName(Player player) {
+    if (gameMode == GameMode.humanVsAI && player == Player.player2) {
+      return aiDifficulty?.displayName ?? 'AI';
+    }
+    return player == Player.player1 ? 'Player' : 'Player 2';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +83,11 @@ class _GameScreenContent extends StatelessWidget {
                 child: WaitingAreaWidget(
                   player: Player.player2,
                   pawns: controller.state.waitingArea[Player.player2] ?? [],
-                  isCurrentPlayer: currentPlayer == Player.player2,
+                  isCurrentPlayer: currentPlayer == Player.player2 &&
+                      !controller.isAITurn,
                   selectedPawn: controller.selectedPawn,
                   onPawnTap: controller.selectPawnFromWaiting,
+                  displayName: _getPlayerName(Player.player2),
                 ),
               ),
             ),
@@ -101,6 +134,7 @@ class _GameScreenContent extends StatelessWidget {
                   isCurrentPlayer: currentPlayer == Player.player1,
                   selectedPawn: controller.selectedPawn,
                   onPawnTap: controller.selectPawnFromWaiting,
+                  displayName: _getPlayerName(Player.player1),
                 ),
               ),
             ),
