@@ -16,6 +16,7 @@ class GameController extends ChangeNotifier {
   final AIController _aiController = AIController();
   final Random _random = Random();
   Timer? _aiMoveTimer;
+  bool _isAIThinking = false;
 
   GameController({
     this.gameMode = GameMode.humanVsHuman,
@@ -44,6 +45,7 @@ class GameController extends ChangeNotifier {
   Pawn? get selectedPawn => _state.selectedPawn;
   Position? get selectedPosition => _state.selectedPosition;
   Player? get winner => _state.winner;
+  bool get isAIThinking => _isAIThinking;
 
   List<Pawn> getCurrentPlayerWaitingPawns() {
     return _state.getCurrentPlayerWaitingPawns();
@@ -207,6 +209,10 @@ class GameController extends ChangeNotifier {
   void _makeAIMove() {
     if (!isAITurn || aiDifficulty == null) return;
 
+    // Set AI thinking state
+    _isAIThinking = true;
+    notifyListeners();
+
     final aiMove = _aiController.calculateMove(
       board: board,
       waitingArea: _state.waitingArea,
@@ -214,9 +220,14 @@ class GameController extends ChangeNotifier {
       difficulty: aiDifficulty!,
     );
 
-    if (aiMove == null) return;
+    if (aiMove == null) {
+      _isAIThinking = false;
+      notifyListeners();
+      return;
+    }
 
-    // Select the pawn
+    // Clear AI thinking state and select the pawn
+    _isAIThinking = false;
     _state = _state.copyWith(
       board: _state.board,  // Explicitly pass current board to avoid copy issues
       waitingArea: _state.waitingArea,  // Explicitly pass current waiting area
