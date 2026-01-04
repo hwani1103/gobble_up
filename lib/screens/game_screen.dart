@@ -59,48 +59,26 @@ class _GameScreenContent extends StatelessWidget {
               ),
             ),
 
-            // Turn indicator
-            Container(
-              padding: const EdgeInsets.symmetric(vertical: 8),
-              child: winner != null
-                  ? Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: winner.color,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Text(
-                        '${winner.name} Wins! 🎉',
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  : Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 16,
-                          height: 16,
-                          decoration: BoxDecoration(
-                            color: currentPlayer.color,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          "${currentPlayer.name}'s Turn",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: currentPlayer.color,
-                          ),
-                        ),
-                      ],
+            // Winner indicator (only shown when game is over)
+            if (winner != null)
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: winner.color,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    '${winner.name} Wins! 🎉',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
                     ),
-            ),
+                  ),
+                ),
+              ),
 
             // Game board - fixed size
             Expanded(
@@ -138,7 +116,7 @@ class _GameScreenContent extends StatelessWidget {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.orange,
                         ),
-                        child: const Text('Cancel Selection'),
+                        child: const Text('선택 취소'),
                       ),
                     )
                   : const SizedBox.shrink(),

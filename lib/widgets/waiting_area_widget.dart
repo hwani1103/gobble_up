@@ -26,8 +26,8 @@ class WaitingAreaWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: player.color.withOpacity(0.1),
         border: Border.all(
-          color: isCurrentPlayer ? player.color : Colors.grey,
-          width: isCurrentPlayer ? 3 : 1,
+          color: isCurrentPlayer ? player.color : Colors.grey.shade300,
+          width: isCurrentPlayer ? 5 : 1,
         ),
         borderRadius: BorderRadius.circular(8),
       ),
@@ -63,8 +63,8 @@ class WaitingAreaWidget extends StatelessWidget {
                       shape: BoxShape.circle,
                       color: player.color,
                       border: Border.all(
-                        color: isSelected ? Colors.yellow : Colors.black26,
-                        width: 2,
+                        color: isSelected ? Colors.white : Colors.black26,
+                        width: isSelected ? 4 : 2,
                       ),
                       boxShadow: [
                         BoxShadow(

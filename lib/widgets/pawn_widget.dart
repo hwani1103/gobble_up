@@ -24,7 +24,7 @@ class PawnWidget extends StatelessWidget {
           shape: BoxShape.circle,
           color: pawn.owner.color,
           border: isSelected
-              ? Border.all(color: Colors.yellow, width: 4)
+              ? Border.all(color: Colors.white, width: 5)
               : Border.all(color: Colors.black26, width: 1),
           boxShadow: [
             BoxShadow(
