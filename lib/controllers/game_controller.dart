@@ -68,8 +68,7 @@ class GameController extends ChangeNotifier {
 
     // Check if the move is valid (uses the corrected canPlacePawn logic)
     if (!canPlacePawn(destination)) {
-      // Invalid move, deselect
-      cancelSelection();
+      // Invalid move, just ignore
       return;
     }
 
