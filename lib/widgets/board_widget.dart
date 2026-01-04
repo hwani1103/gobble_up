@@ -54,8 +54,12 @@ class BoardWidget extends StatelessWidget {
               canPlaceHere: canPlaceHere,
               isSelected: isSelectedPosition,
               onTap: () {
+                // If clicking on the selected position with a pawn, toggle it
+                if (isSelectedPosition && cell.topPawn != null) {
+                  controller.selectPawnFromBoard(position);
+                }
                 // If already selecting a pawn, this is destination
-                if (controller.phase == GamePhase.selectingDestination) {
+                else if (controller.phase == GamePhase.selectingDestination) {
                   controller.selectDestination(position);
                 }
                 // If no pawn selected and cell has pawn, select it
