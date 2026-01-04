@@ -144,7 +144,7 @@ class _GameScreenContent extends StatelessWidget {
             // Action buttons - fixed height to prevent grid resize
             SizedBox(
               height: 56,
-              child: controller.selectedPawn != null
+              child: controller.selectedPawn != null && !controller.isAITurn
                   ? Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
