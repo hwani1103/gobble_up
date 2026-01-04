@@ -21,17 +21,12 @@ class GameController extends ChangeNotifier {
     this.gameMode = GameMode.humanVsHuman,
     this.aiDifficulty,
   }) : _state = GameState.initial(
-          initialPlayer: (gameMode == GameMode.humanVsAI &&
-                  aiDifficulty == AIDifficulty.hell)
-              ? Player.player2
-              : Player.player1,
+          initialPlayer: Player.player1,
         ) {
-    // Trigger AI move if AI starts first
-    if (isAITurn) {
-      // For Hell difficulty, move immediately. For others, small delay.
-      final delayMs = aiDifficulty == AIDifficulty.hell ? 100 : 500;
-      Future.delayed(Duration(milliseconds: delayMs), () {
-        _makeAIMove();
+    // Start AI vs AI game automatically
+    if (gameMode == GameMode.aiVsAI) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        _checkAndTriggerAIMove();
       });
     }
   }
@@ -166,19 +161,9 @@ class GameController extends ChangeNotifier {
   void resetGame() {
     _aiMoveTimer?.cancel();
     _state = GameState.initial(
-      initialPlayer: (gameMode == GameMode.humanVsAI &&
-              aiDifficulty == AIDifficulty.hell)
-          ? Player.player2
-          : Player.player1,
+      initialPlayer: Player.player1,
     );
     notifyListeners();
-
-    // Trigger AI move if AI starts first
-    if (isAITurn) {
-      Future.delayed(const Duration(milliseconds: 500), () {
-        _checkAndTriggerAIMove();
-      });
-    }
   }
 
   @override
@@ -188,9 +173,13 @@ class GameController extends ChangeNotifier {
   }
 
   bool get isAITurn {
-    return gameMode == GameMode.humanVsAI &&
-        currentPlayer == Player.player2 &&
-        !_state.isGameOver;
+    if (_state.isGameOver) return false;
+
+    if (gameMode == GameMode.aiVsAI) {
+      return true; // Both players are AI
+    }
+
+    return gameMode == GameMode.humanVsAI && currentPlayer == Player.player2;
   }
 
   void _checkAndTriggerAIMove() {
@@ -207,10 +196,13 @@ class GameController extends ChangeNotifier {
   void _makeAIMove() {
     if (!isAITurn || aiDifficulty == null) return;
 
+    // In AI vs AI mode, use currentPlayer; in Human vs AI, always use Player 2
+    final aiPlayer = gameMode == GameMode.aiVsAI ? currentPlayer : Player.player2;
+
     final aiMove = _aiController.calculateMove(
       board: board,
       waitingArea: _state.waitingArea,
-      aiPlayer: Player.player2,
+      aiPlayer: aiPlayer,
       difficulty: aiDifficulty!,
     );
 

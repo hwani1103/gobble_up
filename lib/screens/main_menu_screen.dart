@@ -59,12 +59,7 @@ class MainMenuScreen extends StatelessWidget {
                 Colors.red,
               ),
               const SizedBox(height: 16),
-              _buildDifficultyButton(
-                context,
-                '지옥',
-                AIDifficulty.hell,
-                Colors.purple[900]!,
-              ),
+              _buildAIBattleButton(context),
             ],
           ),
         ),
@@ -108,6 +103,38 @@ class MainMenuScreen extends StatelessWidget {
           ),
         ),
         child: Text(label),
+      ),
+    );
+  }
+
+  Widget _buildAIBattleButton(BuildContext context) {
+    return SizedBox(
+      width: 200,
+      height: 60,
+      child: ElevatedButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => GameScreen(
+                gameMode: GameMode.aiVsAI,
+                aiDifficulty: AIDifficulty.hard,
+              ),
+            ),
+          );
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.purple[900],
+          foregroundColor: Colors.white,
+          textStyle: const TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
+        child: const Text('AI 대결'),
       ),
     );
   }

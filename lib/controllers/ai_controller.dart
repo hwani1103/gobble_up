@@ -32,30 +32,47 @@ class AIController {
         return _calculateMediumMove(board, waitingArea, aiPlayer);
       case AIDifficulty.hard:
         return _calculateHardMove(board, waitingArea, aiPlayer);
-      case AIDifficulty.hell:
-        return _calculateHellMove(board, waitingArea, aiPlayer);
     }
   }
 
+  // EASY AI: Minimax with depth 2
   AIMove? _calculateEasyMove(
     Board board,
     Map<Player, List<Pawn>> waitingArea,
     Player aiPlayer,
   ) {
-    final allPossibleMoves = _getAllPossibleMoves(board, waitingArea, aiPlayer);
+    final allMoves = _getAllPossibleMoves(board, waitingArea, aiPlayer);
+    if (allMoves.isEmpty) return null;
 
-    if (allPossibleMoves.isEmpty) return null;
+    // ALWAYS take immediate winning move if available
+    for (final move in allMoves) {
+      if (_wouldWin(board, move, aiPlayer)) {
+        return move;
+      }
+    }
 
-    // Filter out moves that would cause immediate loss
-    final safeMoves = allPossibleMoves.where((move) {
-      return !_wouldCauseImmediateLoss(board, move, aiPlayer);
-    }).toList();
+    AIMove? bestMove;
+    int bestScore = -10000;
 
-    // If all moves cause immediate loss, just pick a random one
-    final movesToChooseFrom = safeMoves.isNotEmpty ? safeMoves : allPossibleMoves;
+    for (final move in allMoves) {
+      final score = _minimax(
+        board,
+        waitingArea,
+        move,
+        depth: 2,
+        isMaximizing: false,
+        aiPlayer: aiPlayer,
+        alpha: -10000,
+        beta: 10000,
+      );
 
-    // Pick a random move
-    return movesToChooseFrom[_random.nextInt(movesToChooseFrom.length)];
+      if (score > bestScore) {
+        bestScore = score;
+        bestMove = move;
+      }
+    }
+
+    return bestMove;
   }
 
   List<AIMove> _getAllPossibleMoves(
@@ -134,59 +151,8 @@ class AIController {
     return winner != null && winner != aiPlayer;
   }
 
-  // MEDIUM AI: Look for winning moves, block opponent, avoid losses
+  // MEDIUM AI: Minimax with depth 3
   AIMove? _calculateMediumMove(
-    Board board,
-    Map<Player, List<Pawn>> waitingArea,
-    Player aiPlayer,
-  ) {
-    final allMoves = _getAllPossibleMoves(board, waitingArea, aiPlayer);
-    if (allMoves.isEmpty) return null;
-
-    final opponent = aiPlayer.opponent;
-
-    // 1. Check if AI can win in one move
-    for (final move in allMoves) {
-      if (_wouldWin(board, move, aiPlayer)) {
-        return move;
-      }
-    }
-
-    // 2. Block opponent's winning move
-    final opponentMoves = _getAllPossibleMoves(board, waitingArea, opponent);
-    for (final opponentMove in opponentMoves) {
-      if (_wouldWin(board, opponentMove, opponent)) {
-        // Try to block by placing at the same position
-        final blockingMoves = allMoves.where(
-          (move) => move.toPosition == opponentMove.toPosition,
-        );
-        if (blockingMoves.isNotEmpty) {
-          return blockingMoves.first;
-        }
-      }
-    }
-
-    // 3. Avoid immediate loss
-    final safeMoves = allMoves.where(
-      (move) => !_wouldCauseImmediateLoss(board, move, aiPlayer),
-    ).toList();
-
-    final movesToChoose = safeMoves.isNotEmpty ? safeMoves : allMoves;
-
-    // 4. Prefer center and strategic positions
-    final centerMoves = movesToChoose.where(
-      (move) => move.toPosition.row == 1 && move.toPosition.col == 1,
-    ).toList();
-
-    if (centerMoves.isNotEmpty) {
-      return centerMoves[_random.nextInt(centerMoves.length)];
-    }
-
-    return movesToChoose[_random.nextInt(movesToChoose.length)];
-  }
-
-  // HARD AI: Minimax with depth 3
-  AIMove? _calculateHardMove(
     Board board,
     Map<Player, List<Pawn>> waitingArea,
     Player aiPlayer,
@@ -225,8 +191,8 @@ class AIController {
     return bestMove;
   }
 
-  // HELL AI: Deep Minimax with depth 5
-  AIMove? _calculateHellMove(
+  // HARD AI: Deep Minimax with depth 5
+  AIMove? _calculateHardMove(
     Board board,
     Map<Player, List<Pawn>> waitingArea,
     Player aiPlayer,

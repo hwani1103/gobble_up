@@ -45,6 +45,9 @@ class _GameScreenContent extends StatelessWidget {
   });
 
   String _getPlayerName(Player player) {
+    if (gameMode == GameMode.aiVsAI) {
+      return player == Player.player1 ? 'AI 1' : 'AI 2';
+    }
     if (gameMode == GameMode.humanVsAI && player == Player.player2) {
       return aiDifficulty?.displayName ?? 'AI';
     }
