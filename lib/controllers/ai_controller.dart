@@ -460,7 +460,7 @@ class AIController {
     return pieceCount == 0;
   }
 
-  // Simple opening move: play center or a random corner
+  // Simple opening move: play center or a random corner with random pawn
   AIMove? _getSimpleOpeningMove(
     Map<Player, List<Pawn>> waitingArea,
     Player aiPlayer,
@@ -468,7 +468,7 @@ class AIController {
     final waitingPawns = waitingArea[aiPlayer] ?? [];
     if (waitingPawns.isEmpty) return null;
 
-    // Prefer center, otherwise pick a random corner
+    // Randomly choose between center and corners
     final positions = [
       Position(1, 1), // Center
       Position(0, 0), // Top-left
@@ -476,20 +476,15 @@ class AIController {
       Position(2, 0), // Bottom-left
       Position(2, 2), // Bottom-right
     ];
+    positions.shuffle(_random);
 
-    // Pick any pawn (prefer medium or large if available)
-    Pawn selectedPawn = waitingPawns.first;
-    for (final pawn in waitingPawns) {
-      if (pawn.size == PawnSize.medium || pawn.size == PawnSize.large) {
-        selectedPawn = pawn;
-        break;
-      }
-    }
+    // Pick a random pawn
+    final selectedPawn = waitingPawns[_random.nextInt(waitingPawns.length)];
 
     return AIMove(
       pawn: selectedPawn,
       fromPosition: null,
-      toPosition: positions[0], // Always play center on opening
+      toPosition: positions.first, // Random position from shuffled list
     );
   }
 }

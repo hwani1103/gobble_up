@@ -16,7 +16,6 @@ class GameController extends ChangeNotifier {
   final AIController _aiController = AIController();
   final Random _random = Random();
   Timer? _aiMoveTimer;
-  bool _isAIThinking = false;
 
   GameController({
     this.gameMode = GameMode.humanVsHuman,
@@ -29,9 +28,9 @@ class GameController extends ChangeNotifier {
         ) {
     // Trigger AI move if AI starts first
     if (isAITurn) {
-      // Random delay between 2-3 seconds for initial move
-      final delaySeconds = 2 + _random.nextInt(2);
-      Future.delayed(Duration(seconds: delaySeconds), () {
+      // For Hell difficulty, move immediately. For others, small delay.
+      final delayMs = aiDifficulty == AIDifficulty.hell ? 100 : 500;
+      Future.delayed(Duration(milliseconds: delayMs), () {
         _makeAIMove();
       });
     }
@@ -45,7 +44,6 @@ class GameController extends ChangeNotifier {
   Pawn? get selectedPawn => _state.selectedPawn;
   Position? get selectedPosition => _state.selectedPosition;
   Player? get winner => _state.winner;
-  bool get isAIThinking => _isAIThinking;
 
   List<Pawn> getCurrentPlayerWaitingPawns() {
     return _state.getCurrentPlayerWaitingPawns();
@@ -209,44 +207,32 @@ class GameController extends ChangeNotifier {
   void _makeAIMove() {
     if (!isAITurn || aiDifficulty == null) return;
 
-    // Set AI thinking state
-    _isAIThinking = true;
+    final aiMove = _aiController.calculateMove(
+      board: board,
+      waitingArea: _state.waitingArea,
+      aiPlayer: Player.player2,
+      difficulty: aiDifficulty!,
+    );
+
+    if (aiMove == null) return;
+
+    // Select the pawn
+    _state = _state.copyWith(
+      board: _state.board,  // Explicitly pass current board to avoid copy issues
+      waitingArea: _state.waitingArea,  // Explicitly pass current waiting area
+      selectedPawn: aiMove.pawn,
+      selectedPosition: aiMove.fromPosition,
+      phase: GamePhase.selectingDestination,
+    );
     notifyListeners();
 
-    // Give UI a chance to update before starting heavy calculation
-    Future.delayed(const Duration(milliseconds: 100), () {
-      final aiMove = _aiController.calculateMove(
-        board: board,
-        waitingArea: _state.waitingArea,
-        aiPlayer: Player.player2,
-        difficulty: aiDifficulty!,
-      );
+    // Random delay between 0.5-1 seconds before placing
+    final placeDelayMs = 500 + _random.nextInt(501);
+    Future.delayed(Duration(milliseconds: placeDelayMs), () {
+      if (_state.isGameOver) return;
 
-      if (aiMove == null) {
-        _isAIThinking = false;
-        notifyListeners();
-        return;
-      }
-
-      // Clear AI thinking state and select the pawn
-      _isAIThinking = false;
-      _state = _state.copyWith(
-        board: _state.board,  // Explicitly pass current board to avoid copy issues
-        waitingArea: _state.waitingArea,  // Explicitly pass current waiting area
-        selectedPawn: aiMove.pawn,
-        selectedPosition: aiMove.fromPosition,
-        phase: GamePhase.selectingDestination,
-      );
-      notifyListeners();
-
-      // Random delay between 0.5-1 seconds before placing
-      final placeDelayMs = 500 + _random.nextInt(501);
-      Future.delayed(Duration(milliseconds: placeDelayMs), () {
-        if (_state.isGameOver) return;
-
-        // Place the pawn
-        selectDestination(aiMove.toPosition);
-      });
+      // Place the pawn
+      selectDestination(aiMove.toPosition);
     });
   }
 
