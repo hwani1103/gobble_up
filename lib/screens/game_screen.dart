@@ -91,6 +91,8 @@ class _GameScreenContent extends StatelessWidget {
                   selectedPawn: controller.selectedPawn,
                   onPawnTap: controller.selectPawnFromWaiting,
                   displayName: _getPlayerName(Player.player2),
+                  isThinking: controller.isAIThinking &&
+                      (gameMode == GameMode.aiVsAI || currentPlayer == Player.player2),
                 ),
               ),
             ),
@@ -140,6 +142,9 @@ class _GameScreenContent extends StatelessWidget {
                   selectedPawn: controller.selectedPawn,
                   onPawnTap: controller.selectPawnFromWaiting,
                   displayName: _getPlayerName(Player.player1),
+                  isThinking: controller.isAIThinking &&
+                      gameMode == GameMode.aiVsAI &&
+                      currentPlayer == Player.player1,
                 ),
               ),
             ),

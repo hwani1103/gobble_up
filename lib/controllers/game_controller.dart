@@ -16,6 +16,7 @@ class GameController extends ChangeNotifier {
   final AIController _aiController = AIController();
   final Random _random = Random();
   Timer? _aiMoveTimer;
+  bool _isAIThinking = false;
 
   GameController({
     this.gameMode = GameMode.humanVsHuman,
@@ -43,6 +44,7 @@ class GameController extends ChangeNotifier {
   Pawn? get selectedPawn => _state.selectedPawn;
   Position? get selectedPosition => _state.selectedPosition;
   Player? get winner => _state.winner;
+  bool get isAIThinking => _isAIThinking;
 
   List<Pawn> getCurrentPlayerWaitingPawns() {
     return _state.getCurrentPlayerWaitingPawns();
@@ -208,12 +210,20 @@ class GameController extends ChangeNotifier {
     }
   }
 
-  void _makeAIMove() {
+  Future<void> _makeAIMove() async {
     if (!isAITurn || aiDifficulty == null) return;
+
+    // Show thinking indicator
+    _isAIThinking = true;
+    notifyListeners();
+
+    // Allow UI to update before heavy calculation
+    await Future.delayed(const Duration(milliseconds: 100));
 
     // In AI vs AI mode, use currentPlayer; in Human vs AI, always use Player 2
     final aiPlayer = gameMode == GameMode.aiVsAI ? currentPlayer : Player.player2;
 
+    // Run calculation (this may take time but won't freeze UI due to periodic yielding)
     final aiMove = _aiController.calculateMove(
       board: board,
       waitingArea: _state.waitingArea,
@@ -222,7 +232,13 @@ class GameController extends ChangeNotifier {
       isAIvsAI: gameMode == GameMode.aiVsAI,
     );
 
-    if (aiMove == null) return;
+    // Hide thinking indicator
+    _isAIThinking = false;
+
+    if (aiMove == null) {
+      notifyListeners();
+      return;
+    }
 
     // Select the pawn
     _state = _state.copyWith(
@@ -236,12 +252,12 @@ class GameController extends ChangeNotifier {
 
     // Random delay between 0.5-1 seconds before placing
     final placeDelayMs = 500 + _random.nextInt(501);
-    Future.delayed(Duration(milliseconds: placeDelayMs), () {
-      if (_state.isGameOver) return;
+    await Future.delayed(Duration(milliseconds: placeDelayMs));
 
-      // Place the pawn
-      selectDestination(aiMove.toPosition);
-    });
+    if (_state.isGameOver) return;
+
+    // Place the pawn
+    selectDestination(aiMove.toPosition);
   }
 
   bool canPlacePawn(Position position) {
